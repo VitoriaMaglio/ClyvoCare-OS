@@ -45,7 +45,7 @@ Spring Validation
 
 Spring Cache
 
-H2 Database
+Oracle Database
 
 Swagger / OpenAPI
 
