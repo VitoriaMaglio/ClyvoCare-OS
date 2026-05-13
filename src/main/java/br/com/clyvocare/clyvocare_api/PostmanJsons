@@ -1,0 +1,59 @@
+TUTOR
+
+POST /tutores — criar tutor
+json{
+  "nome": "Maria da Silva",
+  "email": "maria@email.com",
+  "telefone": "11999999999",
+  "cpf": "12345678901",
+  "senha": "senha123",
+  "idCidade": null
+}
+POST /tutores — testar validação (campos inválidos, deve retornar 400) ok
+json{
+  "nome": "",
+  "email": "email-invalido",
+  "telefone": "11999999999",
+  "cpf": "123",
+  "senha": "123"
+}
+POST /tutores — testar CPF/email duplicado (deve retornar 422)  ok
+json{
+  "nome": "João Santos",
+  "email": "maria@email.com",
+  "telefone": "11888888888",
+  "cpf": "12345678901",
+  "senha": "senha456"
+}
+PUT /tutores/1 — atualizar
+json{
+  "nome": "Maria da Silva Souza",
+  "email": "maria.souza@email.com",
+  "telefone": "11977777777",
+  "cpf": "12345678901",
+  "senha": "novasenha123",
+  "idCidade": null
+}
+
+endpoints de tutor:
+POST localhost:8080/tutores 201 Created ok
+GETlocalhost:8080/tutores200 + página ok
+GETlocalhost:8080/tutores?page=0&size=5&sort=nome,asc200 paginado  ok
+GETlocalhost:8080/tutores?nome=Maria200 filtrado  ok
+GETlocalhost:8080/tutores?estado=SP200 filtrado ok
+GETlocalhost:8080/tutores/1  not found 404 ok pq n tem nenhuk tutor com esses ids
+GETlocalhost:8080/tutores/9
+PUTlocalhost:8080/tutores/1        ok
+DELETElocalhost:8080/tutores/1   ok
+
+
+
+
+
+
+
+
+
+
+
+
