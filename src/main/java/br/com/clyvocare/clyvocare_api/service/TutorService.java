@@ -27,17 +27,15 @@ public class TutorService {
     private final CidadeRepository cidadeRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    // -------------------------------------------------------
-    // CRIAR
-    // -------------------------------------------------------
+
     @Transactional
     @CacheEvict(value = "tutores", allEntries = true)
     public TutorResponseDTO criar(TutorRequestDTO dto) {
-        // Regra: e-mail único
+        //  e-mail único
         if (tutorRepository.existsByEmail(dto.getEmail())) {
             throw new RegraNegocioException("Já existe um tutor cadastrado com o e-mail: " + dto.getEmail());
         }
-        // Regra: CPF único
+        // CPF único
         if (tutorRepository.existsByCpf(dto.getCpf())) {
             throw new RegraNegocioException("Já existe um tutor cadastrado com o CPF informado.");
         }
@@ -47,7 +45,7 @@ public class TutorService {
         tutor.setEmail(dto.getEmail());
         tutor.setTelefone(dto.getTelefone());
         tutor.setCpf(dto.getCpf());
-        // Regra: senha sempre armazenada como hash bcrypt
+        //  senha sempre armazenada como hash bcrypt
         tutor.setSenhaHash(passwordEncoder.encode(dto.getSenha()));
         tutor.setDataCadastro(LocalDate.now());
 
@@ -60,52 +58,41 @@ public class TutorService {
         return toResponseDTO(tutorRepository.save(tutor));
     }
 
-    // -------------------------------------------------------
-    // LISTAR (paginado + ordenado)
-    // -------------------------------------------------------
+
     @Cacheable("tutores")
     public Page<TutorResponseDTO> listar(Pageable pageable) {
         return tutorRepository.findAll(pageable).map(this::toResponseDTO);
     }
 
-    // -------------------------------------------------------
-    // BUSCAR POR ID
-    // -------------------------------------------------------
+
     public TutorResponseDTO buscarPorId(Long id) {
         return toResponseDTO(buscarEntidade(id));
     }
 
-    // -------------------------------------------------------
-    // BUSCAR POR NOME (busca parcial, paginada)
-    // -------------------------------------------------------
+
     public Page<TutorResponseDTO> buscarPorNome(String nome, Pageable pageable) {
         return tutorRepository
                 .findByNomeContainingIgnoreCase(nome, pageable)
                 .map(this::toResponseDTO);
     }
 
-    // -------------------------------------------------------
-    // BUSCAR POR ESTADO
-    // -------------------------------------------------------
+
     public Page<TutorResponseDTO> buscarPorEstado(String estado, Pageable pageable) {
         return tutorRepository
                 .findByEstado(estado.toUpperCase(), pageable)
                 .map(this::toResponseDTO);
     }
 
-    // -------------------------------------------------------
-    // ATUALIZAR
-    // -------------------------------------------------------
     @Transactional
     @CacheEvict(value = "tutores", allEntries = true)
     public TutorResponseDTO atualizar(Long id, TutorRequestDTO dto) {
         Tutor tutor = buscarEntidade(id);
 
-        // Regra: e-mail único (exceto o próprio)
+        //  e-mail único (exceto o próprio)
         if (tutorRepository.existsByEmailAndIdTutorNot(dto.getEmail(), id)) {
             throw new RegraNegocioException("Já existe outro tutor cadastrado com o e-mail: " + dto.getEmail());
         }
-        // Regra: CPF único (exceto o próprio)
+        //  CPF único (exceto o próprio)
         if (tutorRepository.existsByCpfAndIdTutorNot(dto.getCpf(), id)) {
             throw new RegraNegocioException("Já existe outro tutor cadastrado com o CPF informado.");
         }
@@ -115,7 +102,7 @@ public class TutorService {
         tutor.setTelefone(dto.getTelefone());
         tutor.setCpf(dto.getCpf());
 
-        // Regra: só atualiza a senha se uma nova for enviada
+        //  só atualiza a senha se uma nova for enviada
         if (dto.getSenha() != null && !dto.getSenha().isBlank()) {
             tutor.setSenhaHash(passwordEncoder.encode(dto.getSenha()));
         }
@@ -129,9 +116,7 @@ public class TutorService {
         return toResponseDTO(tutorRepository.save(tutor));
     }
 
-    // -------------------------------------------------------
-    // DELETAR
-    // -------------------------------------------------------
+
     @Transactional
     @CacheEvict(value = "tutores", allEntries = true)
     public void deletar(Long id) {
@@ -145,9 +130,6 @@ public class TutorService {
         tutorRepository.delete(tutor);
     }
 
-    // -------------------------------------------------------
-    // HELPERS INTERNOS
-    // -------------------------------------------------------
     public Tutor buscarEntidade(Long id) {
         return tutorRepository.findById(id)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Tutor não encontrado com ID: " + id));

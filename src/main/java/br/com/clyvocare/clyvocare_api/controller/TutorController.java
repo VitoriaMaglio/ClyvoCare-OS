@@ -26,9 +26,6 @@ public class TutorController {
 
     private final TutorService tutorService;
 
-    // -------------------------------------------------------
-    // POST /tutores
-    // -------------------------------------------------------
     @PostMapping
     @Operation(summary = "Cadastra um novo tutor")
     @ApiResponses({
@@ -40,14 +37,7 @@ public class TutorController {
         return ResponseEntity.status(HttpStatus.CREATED).body(tutorService.criar(dto));
     }
 
-    // -------------------------------------------------------
-    // GET /tutores
-    // Suporta paginação, ordenação e busca por nome e estado
-    // Exemplos:
-    //   GET /tutores?page=0&size=10&sort=nome,asc
-    //   GET /tutores?nome=Maria
-    //   GET /tutores?estado=SP
-    // -------------------------------------------------------
+
     @GetMapping
     @Operation(summary = "Lista tutores com paginação, ordenação e filtros opcionais",
                description = "Parâmetros: nome (busca parcial), estado (UF). " +
@@ -71,9 +61,7 @@ public class TutorController {
         return ResponseEntity.ok(tutorService.listar(pageable));
     }
 
-    // -------------------------------------------------------
-    // GET /tutores/{id}
-    // -------------------------------------------------------
+
     @GetMapping("/{id}")
     @Operation(summary = "Busca tutor por ID")
     @ApiResponses({
@@ -86,9 +74,7 @@ public class TutorController {
         return ResponseEntity.ok(tutorService.buscarPorId(id));
     }
 
-    // -------------------------------------------------------
-    // PUT /tutores/{id}
-    // -------------------------------------------------------
+
     @PutMapping("/{id}")
     @Operation(summary = "Atualiza dados do tutor")
     @ApiResponses({
@@ -103,9 +89,7 @@ public class TutorController {
         return ResponseEntity.ok(tutorService.atualizar(id, dto));
     }
 
-    // -------------------------------------------------------
-    // DELETE /tutores/{id}
-    // -------------------------------------------------------
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Remove um tutor",
                description = "Não permite exclusão se o tutor possuir pets cadastrados")

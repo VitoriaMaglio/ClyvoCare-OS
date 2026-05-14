@@ -1,8 +1,8 @@
-package br.com.clyvocare.controller;
+package br.com.clyvocare.clyvocare_api.controller;
 
-import br.com.clyvocare.dto.request.PetRequestDTO;
-import br.com.clyvocare.dto.response.*;
-import br.com.clyvocare.service.PetService;
+import br.com.clyvocare.clyvocare_api.dto.PetRequestDTO;
+import br.com.clyvocare.clyvocare_api.dto.*;
+import br.com.clyvocare.clyvocare_api.service.PetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -97,9 +97,7 @@ public class PetController {
         return ResponseEntity.noContent().build();
     }
 
-    // -------------------------------------------------------
-    // DIFERENCIAIS INTELIGENTES
-    // -------------------------------------------------------
+
 
     @GetMapping("/{id}/risco")
     @Operation(summary = "Calcula o score de risco de saúde do pet",

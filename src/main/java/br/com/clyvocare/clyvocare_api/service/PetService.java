@@ -1,14 +1,14 @@
-package br.com.clyvocare.service;
+package br.com.clyvocare.clyvocare_api.service;
 
-import br.com.clyvocare.dto.request.PetRequestDTO;
-import br.com.clyvocare.dto.response.AlertaResponseDTO;
-import br.com.clyvocare.dto.response.PetResponseDTO;
-import br.com.clyvocare.dto.response.RecomendacaoResponseDTO;
-import br.com.clyvocare.dto.response.RiscoResponseDTO;
-import br.com.clyvocare.entity.*;
-import br.com.clyvocare.exception.EntidadeNaoEncontradaException;
-import br.com.clyvocare.exception.RegraNegocioException;
-import br.com.clyvocare.repository.*;
+import br.com.clyvocare.clyvocare_api.dto.PetRequestDTO;
+import br.com.clyvocare.clyvocare_api.dto.AlertaResponseDTO;
+import br.com.clyvocare.clyvocare_api.dto.PetResponseDTO;
+import br.com.clyvocare.clyvocare_api.dto.RecomendacaoResponseDTO;
+import br.com.clyvocare.clyvocare_api.dto.RiscoResponseDTO;
+import br.com.clyvocare.clyvocare_api.entity.*;
+import br.com.clyvocare.clyvocare_api.exception.EntidadeNaoEncontradaException;
+import br.com.clyvocare.clyvocare_api.exception.RegraNegocioException;
+import br.com.clyvocare.clyvocare_api.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -35,9 +35,7 @@ public class PetService {
     private final ConsultaRepository consultaRepository;
     private final TratamentoRepository tratamentoRepository;
 
-    // -------------------------------------------------------
-    // CRIAR
-    // -------------------------------------------------------
+
     @Transactional
     @CacheEvict(value = "pets", allEntries = true)
     public PetResponseDTO criar(PetRequestDTO dto) {
@@ -52,47 +50,36 @@ public class PetService {
         return toResponseDTO(petRepository.save(pet));
     }
 
-    // -------------------------------------------------------
-    // LISTAR (paginado)
-    // -------------------------------------------------------
+
     @Cacheable("pets")
     public Page<PetResponseDTO> listar(Pageable pageable) {
         return petRepository.findAll(pageable).map(this::toResponseDTO);
     }
 
-    // -------------------------------------------------------
-    // BUSCAR POR ID
-    // -------------------------------------------------------
+
     public PetResponseDTO buscarPorId(Long id) {
         return toResponseDTO(buscarEntidade(id));
     }
 
-    // -------------------------------------------------------
-    // BUSCAR POR TUTOR
-    // -------------------------------------------------------
+
     public Page<PetResponseDTO> buscarPorTutor(Long idTutor, Pageable pageable) {
         tutorRepository.findById(idTutor)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Tutor não encontrado com ID: " + idTutor));
         return petRepository.findByTutorIdTutor(idTutor, pageable).map(this::toResponseDTO);
     }
 
-    // -------------------------------------------------------
-    // BUSCAR POR ESPECIE
-    // -------------------------------------------------------
+
+
     public Page<PetResponseDTO> buscarPorEspecie(String nomeEspecie, Pageable pageable) {
         return petRepository.findByEspecie(nomeEspecie, pageable).map(this::toResponseDTO);
     }
 
-    // -------------------------------------------------------
-    // BUSCAR POR NOME
-    // -------------------------------------------------------
+
     public Page<PetResponseDTO> buscarPorNome(String nome, Pageable pageable) {
         return petRepository.findByNomeContainingIgnoreCase(nome, pageable).map(this::toResponseDTO);
     }
 
-    // -------------------------------------------------------
-    // ATUALIZAR
-    // -------------------------------------------------------
+
     @Transactional
     @CacheEvict(value = "pets", allEntries = true)
     public PetResponseDTO atualizar(Long id, PetRequestDTO dto) {
@@ -107,9 +94,7 @@ public class PetService {
         return toResponseDTO(petRepository.save(pet));
     }
 
-    // -------------------------------------------------------
-    // DELETAR
-    // -------------------------------------------------------
+
     @Transactional
     @CacheEvict(value = "pets", allEntries = true)
     public void deletar(Long id) {
@@ -125,9 +110,7 @@ public class PetService {
         petRepository.delete(pet);
     }
 
-    // -------------------------------------------------------
-    // SCORE DE RISCO
-    // -------------------------------------------------------
+
     @Cacheable(value = "risco", key = "#id")
     public RiscoResponseDTO calcularRisco(Long id) {
         Pet pet = buscarEntidade(id);
@@ -135,28 +118,28 @@ public class PetService {
         int pontuacao = 0;
         List<String> fatores = new ArrayList<>();
 
-        // Fator 1: vacinas atrasadas
+        // vacinas atrasadas
         int vacinasAtrasadas = vacinacaoRepository.countVacinasAtrasadas(id);
         if (vacinasAtrasadas > 0) {
             pontuacao += vacinasAtrasadas * 20;
             fatores.add(vacinasAtrasadas + " vacina(s) atrasada(s)");
         }
 
-        // Fator 2: tratamentos abandonados (ativos há mais de 30 dias)
+        // tratamentos abandonados (ativos há mais de 30 dias)
         int tratamentosAbandonados = tratamentoRepository.countTratamentosAbandonados(id);
         if (tratamentosAbandonados > 0) {
             pontuacao += tratamentosAbandonados * 25;
             fatores.add(tratamentosAbandonados + " tratamento(s) sem conclusão há mais de 30 dias");
         }
 
-        // Fator 3: sem consulta há mais de 12 meses
+        //  sem consulta há mais de 12 meses
         int mesesSemConsulta = consultaRepository.mesesDesdeUltimaConsulta(id);
         if (mesesSemConsulta > 12) {
             pontuacao += 20;
             fatores.add("Sem consulta há " + mesesSemConsulta + " meses");
         }
 
-        // Fator 4: pet idoso
+        //  pet idoso
         int idadeMeses = calcularIdadeMeses(pet);
         String faseVida = calcularFaseVida(pet, idadeMeses);
         if ("Idoso".equalsIgnoreCase(faseVida)) {
@@ -183,15 +166,11 @@ public class PetService {
                 .mesesSemConsulta(mesesSemConsulta)
                 .build();
     }
-
-    // -------------------------------------------------------
-    // ALERTAS AUTOMÁTICOS
-    // -------------------------------------------------------
     public List<AlertaResponseDTO> gerarAlertas(Long id) {
         Pet pet = buscarEntidade(id);
         List<AlertaResponseDTO> alertas = new ArrayList<>();
 
-        // Alerta 1: vacinas atrasadas
+        //  vacinas atrasadas
         int vacinasAtrasadas = vacinacaoRepository.countVacinasAtrasadas(id);
         if (vacinasAtrasadas > 0) {
             alertas.add(AlertaResponseDTO.builder()
@@ -204,7 +183,7 @@ public class PetService {
                     .build());
         }
 
-        // Alerta 2: tratamento abandonado
+        //  tratamento abandonado
         int tratamentosAbandonados = tratamentoRepository.countTratamentosAbandonados(id);
         if (tratamentosAbandonados > 0) {
             alertas.add(AlertaResponseDTO.builder()
@@ -216,7 +195,7 @@ public class PetService {
                     .build());
         }
 
-        // Alerta 3: sem consulta há mais de 12 meses
+        //  sem consulta há mais de 12 meses
         int mesesSemConsulta = consultaRepository.mesesDesdeUltimaConsulta(id);
         if (mesesSemConsulta > 12) {
             alertas.add(AlertaResponseDTO.builder()
@@ -228,7 +207,7 @@ public class PetService {
                     .build());
         }
 
-        // Alerta 4: pet idoso sem consulta há 6 meses
+        //  pet idoso sem consulta há 6 meses
         int idadeMeses = calcularIdadeMeses(pet);
         String faseVida = calcularFaseVida(pet, idadeMeses);
         if ("Idoso".equalsIgnoreCase(faseVida) && mesesSemConsulta > 6) {
@@ -245,9 +224,6 @@ public class PetService {
         return alertas;
     }
 
-    // -------------------------------------------------------
-    // RECOMENDAÇÕES POR FASE DE VIDA
-    // -------------------------------------------------------
     @Cacheable(value = "recomendacoes", key = "#id")
     public RecomendacaoResponseDTO gerarRecomendacoes(Long id) {
         Pet pet = buscarEntidade(id);
@@ -318,9 +294,7 @@ public class PetService {
                 .build();
     }
 
-    // -------------------------------------------------------
-    // HELPERS INTERNOS
-    // -------------------------------------------------------
+
     public Pet buscarEntidade(Long id) {
         return petRepository.findById(id)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Pet não encontrado com ID: " + id));

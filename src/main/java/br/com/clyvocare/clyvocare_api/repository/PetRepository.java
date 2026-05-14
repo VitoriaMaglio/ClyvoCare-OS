@@ -1,6 +1,6 @@
 package br.com.clyvocare.clyvocare_api.repository;
 
-import br.com.clyvocare.entity.Pet;
+import br.com.clyvocare.clyvocare_api.entity.Pet;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
