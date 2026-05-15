@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "VETERINARIOS")
 @Getter
@@ -45,4 +47,7 @@ public class Veterinario {
     @JoinColumn(name = "ID_CLINICA")
     @Schema(description = "Clínica de vínculo")
     private Clinica clinica;
+
+    @OneToMany(mappedBy = "veterinario", fetch = FetchType.LAZY)
+    private List<Consulta> consultas;
 }

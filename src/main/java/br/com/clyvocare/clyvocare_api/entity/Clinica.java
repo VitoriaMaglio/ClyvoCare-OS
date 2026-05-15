@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "CLINICAS")
@@ -55,4 +56,7 @@ public class Clinica {
     @JoinColumn(name = "ID_CIDADE")
     @Schema(description = "Localização da clínica")
     private Cidade cidade;
+
+    @OneToMany(mappedBy = "clinica", fetch = FetchType.LAZY)
+    private List<Veterinario> veterinarios;
 }
