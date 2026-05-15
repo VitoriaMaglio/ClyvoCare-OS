@@ -46,6 +46,56 @@ GETlocalhost:8080/tutores/9
 PUTlocalhost:8080/tutores/1        ok
 DELETElocalhost:8080/tutores/1   ok
 
+INSERT no banco para teste de Pet
+
+
+
+POST espécie
+{
+  "nome": "Cão",
+  "descricao": "Mamífero doméstico"
+}
+{
+  "nome": "Gato",
+  "descricao": "Felino doméstico"
+}
+
+Post raca
+{
+  "nome": "Golden Retriever",
+  "porte": "Grande",
+  "idEspecie": 1
+}
+
+
+POST pet  ok
+{
+  "nome": "Rex",
+  "dataNascimento": "2022-03-15",
+  "sexo": "M",
+  "pesoAtual": 12.500,
+  "microchip": "900123456789012",
+  "idTutor": 1,
+  "idEspecie": 1,
+  "idRaca": 1
+}
+
+GET /pets/1/risco ok
+GET /pets/1/alertas ok
+GET /pets/1/recomendacoes nãoo
+
+POST consulta ok
+{
+  "dataConsulta": "2024-01-10",
+  "tipo": "ROTINA",
+  "motivo": "Check-up anual",
+  "diagnostico": "Animal saudável",
+  "pesoNaConsulta": 12.500,
+  "status": "REALIZADA",
+  "idPet": 1,
+  "idVeterinario": 1,
+  "idClinica": 1
+}
 
 
 
