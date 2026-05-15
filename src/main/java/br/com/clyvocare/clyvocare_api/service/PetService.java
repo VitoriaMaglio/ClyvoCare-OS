@@ -56,7 +56,7 @@ public class PetService {
         return petRepository.findAll(pageable).map(this::toResponseDTO);
     }
 
-
+    @Transactional(readOnly = true)
     public PetResponseDTO buscarPorId(Long id) {
         return toResponseDTO(buscarEntidade(id));
     }
@@ -110,7 +110,7 @@ public class PetService {
         petRepository.delete(pet);
     }
 
-
+    @Transactional(readOnly = true)
     @Cacheable(value = "risco", key = "#id")
     public RiscoResponseDTO calcularRisco(Long id) {
         Pet pet = buscarEntidade(id);
@@ -166,6 +166,7 @@ public class PetService {
                 .mesesSemConsulta(mesesSemConsulta)
                 .build();
     }
+    @Transactional(readOnly = true)
     public List<AlertaResponseDTO> gerarAlertas(Long id) {
         Pet pet = buscarEntidade(id);
         List<AlertaResponseDTO> alertas = new ArrayList<>();
@@ -224,6 +225,7 @@ public class PetService {
         return alertas;
     }
 
+    @Transactional(readOnly = true)
     @Cacheable(value = "recomendacoes", key = "#id")
     public RecomendacaoResponseDTO gerarRecomendacoes(Long id) {
         Pet pet = buscarEntidade(id);

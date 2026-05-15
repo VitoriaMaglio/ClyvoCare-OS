@@ -82,7 +82,7 @@ POST pet  ok
 
 GET /pets/1/risco ok
 GET /pets/1/alertas ok
-GET /pets/1/recomendacoes nãoo
+GET /pets/1/recomendacoes ok
 
 POST consulta ok
 {
@@ -97,8 +97,12 @@ POST consulta ok
   "idClinica": 1
 }
 
-
-
+get http://localhost:8080/consultas/1 ok
+get http://localhost:8080/consultas ok
+GET http://localhost:8080/consultas?status=REALIZADA ok
+GET http://localhost:8080/consultas?idClinica=1 ok
+GET http://localhost:8080/consultas?page=0&size=10 ok
+GET http://localhost:8080/consultas?page=0&size=10&sort=dataConsulta,desc ok
 
 
 

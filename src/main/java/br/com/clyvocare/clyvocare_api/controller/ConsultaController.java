@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,7 +30,7 @@ public class ConsultaController {
     public ResponseEntity<ConsultaResponseDTO> criar(@RequestBody @Valid ConsultaRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(consultaService.criar(dto));
     }
-
+    @Transactional(readOnly = true)
     @GetMapping
     @Operation(summary = "Lista consultas com paginação e filtros",
                description = "Filtros: idPet, status (AGENDADA/REALIZADA/CANCELADA), idClinica")
@@ -44,7 +45,7 @@ public class ConsultaController {
         if (idClinica != null) return ResponseEntity.ok(consultaService.buscarPorClinica(idClinica, pageable));
         return ResponseEntity.ok(consultaService.listar(pageable));
     }
-
+    @Transactional(readOnly = true)
     @GetMapping("/{id}")
     @Operation(summary = "Busca consulta por ID")
     public ResponseEntity<ConsultaResponseDTO> buscarPorId(@PathVariable Long id) {
