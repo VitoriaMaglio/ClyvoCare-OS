@@ -7,6 +7,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface VacinaRepository extends JpaRepository<Vacina, Long> {
 
+
     Page<Vacina> findByEspecieIdEspecie(Long idEspecie, Pageable pageable);
+
     Page<Vacina> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
+
+    boolean existsByNomeIgnoreCase(String nome);
+
+    boolean existsByNomeIgnoreCaseAndIdVacinaNot(String nome, Long id);
 }
